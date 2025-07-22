@@ -35,6 +35,7 @@ export default function CreateTaskForm(userProfile: LIFFProfile) {
   const [projects, setProjects] = useState<string[]>([]);
   const [employees, setEmployees] = useState<string[]>([]);
   const [tasks, setTasks] = useState<Task[]>([]);
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const [status, setStatus] = useState<any>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
