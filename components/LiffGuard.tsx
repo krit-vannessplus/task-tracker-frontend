@@ -1,14 +1,17 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useRouter, useSearchParams, usePathname } from "next/navigation";
+import { LiffProvider, LIFFProfile } from "./LiffContext";
 import liff from "@line/liff";
 
 export default function LiffGuard({ children }: { children: React.ReactNode }) {
   const router = useRouter();
   const searchParams = useSearchParams();
+  const pathname = usePathname();
   const [ready, setReady] = useState(false);
   const liffId = process.env.NEXT_PUBLIC_LIFF_ID;
+  const [profile, setProfile] = useState<LIFFProfile | null>(null);
   console.log("LIFF ID:", liffId);
 
   useEffect(() => {
@@ -27,15 +30,20 @@ export default function LiffGuard({ children }: { children: React.ReactNode }) {
         );
 
         // 3. (Optional) Get profile here
-        const profile = await liff.getProfile();
-        console.log("LIFF user:", profile.userId, profile.displayName);
+        const p = await liff.getProfile();
+        const prof: LIFFProfile = {
+          userId: p.userId,
+          displayName: p.displayName,
+        };
+        setProfile(prof);
 
         // 4. Redirect based on ?page= query
-        const page = searchParams.get("page");
-        if (page === "createTask") {
-          router.replace("/createTask");
-        } else {
-          router.replace("/listTasks");
+        // **Redirect logic**: only run when on the root `/` path
+        if (pathname === "/") {
+          const pageParam = searchParams.get("page");
+          const target =
+            pageParam === "createTask" ? "/createTask" : "/listTasks";
+          router.replace(target);
         }
       } catch (err) {
         console.error("LIFF error:", err);
@@ -45,17 +53,14 @@ export default function LiffGuard({ children }: { children: React.ReactNode }) {
     };
 
     initAndRedirect();
-  }, [router, searchParams]);
+  }, []);
 
   // Show loader until LIFF flow finishes
-  if (!ready) {
+  if (!ready || !profile) {
     return (
-      <div style={{ padding: 20, textAlign: "center" }}>
-        Loading… please wait
-      </div>
+      <div style={{ padding: 20, textAlign: "center" }}>Loading LIFF…</div>
     );
   }
 
-  // Once ready (and already redirected), render children
-  return <>{children}</>;
+  return <LiffProvider profile={profile}>{children}</LiffProvider>;
 }

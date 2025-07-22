@@ -3,6 +3,7 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import LiffGuard from "@/components/LiffGuard"; // <-- import your client guard
+import Header from "@/components/header"; // Import your header component
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -30,7 +31,10 @@ export default function RootLayout({
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
         {/* Wrap all pages in your LIFF guard */}
-        <LiffGuard>{children}</LiffGuard>
+        <div className="min-h-screen flex flex-col bg-gray-100 space-y-4 pb-4">
+          <Header /> {/* Include the header component */}
+          <LiffGuard>{children}</LiffGuard>
+        </div>
       </body>
     </html>
   );
