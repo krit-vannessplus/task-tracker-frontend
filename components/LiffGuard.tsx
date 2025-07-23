@@ -1,11 +1,12 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { Suspense, useEffect, useState } from "react";
 import { useRouter, useSearchParams, usePathname } from "next/navigation";
 import { LiffProvider, LIFFProfile } from "./LiffContext";
 import liff from "@line/liff";
 
-export default function LiffGuard({ children }: { children: React.ReactNode }) {
+// Separate component for LIFF initialization
+function LiffInit({ children }: { children: React.ReactNode }) {
   const router = useRouter();
   const searchParams = useSearchParams();
   const pathname = usePathname();
@@ -63,4 +64,17 @@ export default function LiffGuard({ children }: { children: React.ReactNode }) {
   }
 
   return <LiffProvider profile={profile}>{children}</LiffProvider>;
+}
+
+// Main LiffGuard component with Suspense
+export default function LiffGuard({ children }: { children: React.ReactNode }) {
+  return (
+    <Suspense
+      fallback={
+        <div style={{ padding: 20, textAlign: "center" }}>Loading...</div>
+      }
+    >
+      <LiffInit>{children}</LiffInit>
+    </Suspense>
+  );
 }

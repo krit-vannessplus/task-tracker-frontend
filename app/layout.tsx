@@ -4,6 +4,7 @@ import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import LiffGuard from "@/components/LiffGuard"; // <-- import your client guard
 import Header from "@/components/header"; // Import your header component
+import { Suspense } from "react";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -33,7 +34,9 @@ export default function RootLayout({
         {/* Wrap all pages in your LIFF guard */}
         <div className="min-h-screen flex flex-col bg-gray-100 space-y-4 pb-4">
           <Header /> {/* Include the header component */}
-          <LiffGuard>{children}</LiffGuard>
+          <Suspense fallback={<div>Loading...</div>}>
+            <LiffGuard>{children}</LiffGuard>
+          </Suspense>
         </div>
       </body>
     </html>
