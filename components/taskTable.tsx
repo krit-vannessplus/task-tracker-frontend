@@ -126,12 +126,14 @@ export default function TaskTable() {
   const handleStatusUpdate = async (task: Task, newStatus: string) => {
     try {
       const updatedTask = { ...task, status: newStatus };
+      console.log("Updating task status:", updatedTask);
       const res = await axios.get(GAS_URL, {
         params: {
           action: "update",
           payload: JSON.stringify(updatedTask),
         },
       });
+      console.log("Status updated:", res.data);
 
       // Update local state
       setData((prev) => prev.map((t) => (t.id === task.id ? res.data : t)));
